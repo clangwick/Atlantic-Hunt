@@ -23,3 +23,7 @@ def load_sound(file):
     except pygame.error:
         print ('Warning, unable to load, %s' % file)
     return dummysound()
+
+def distance( loc1, loc2 ):
+    dist = ((loc1[0]-loc2[0])**2 + (loc1[1]-loc2[1])**2)**0.5
+    return dist

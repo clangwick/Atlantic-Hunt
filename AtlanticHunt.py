@@ -9,12 +9,12 @@ from sub import Sub
 print("importing freighter.py. . .")
 from freighter import Freighter
 print("importing functions.py. . .")
-from functions import load_image, load_images
+from functions import *
 
 #simulation constants
 print("setting simulation constants. . .")
 framerate = 40
-SCREENRECT = Rect(0, 0, 900, 600)
+SCREENRECT = Rect(0, 0, 1012, 759)
 
 # Initialize pygame
 print("initializing PyGame. . .")
@@ -33,7 +33,7 @@ screen = pygame.display.set_mode(SCREENRECT.size, winstyle, bestdepth)
 #(do this before the classes are used, after screen setup)
 print("loading images. . .")
 Freighter.images = [load_image('greenDot.png')]
-Sub.images = [load_image('redDot.png')]
+Sub.images = [load_image('submarine.png')]
 
 #decorate the game window
 print("decorating game window. . .")
@@ -44,7 +44,7 @@ pygame.mouse.set_visible(0)
 
 #create the background, tile the bgd image
 print("creating the background. . .")
-bgdtile = load_image('background.jpg')
+bgdtile = load_image('background.png')
 background = pygame.Surface(SCREENRECT.size)
 for x in range(0, SCREENRECT.width, bgdtile.get_width()):
     background.blit(bgdtile, (x, 0))
@@ -64,10 +64,10 @@ Sub.containers = subs, all
 
 #create starting sprites
 print("creating starting sprites. . .")
-sally = Sub(SCREENRECT)
+sally = Sub(SCREENRECT, 'sally')
 sally.add(subs)
 sally.add(all)
-fred = Freighter(SCREENRECT)
+fred = Freighter(SCREENRECT, 'fred')
 fred.add(freighters)
 fred.add(all)
 
@@ -78,24 +78,26 @@ clock = pygame.time.Clock()
 #running the simulation
 frame = 0
 print("running the simulation. . .")
-#print("start, Fred status: " + str(fred.alive()))
 
 while fred.alive():
 
     #clear the sprites
     all.clear(screen, background)
-
-    #update sprites
-    all.update()
-
-    #detect if Sally has killed Fred
-    interceptions=pygame.sprite.groupcollide(subs, freighters, 0, 0, collided=pygame.sprite.collide_circle(subs,freighters))
+            
+   #check for detection 
+    interceptions=pygame.sprite.groupcollide(subs, freighters, 0, 0)
     for sub in interceptions.keys():
         target = interceptions[sub][0]
-        if sub.detect(1,1,1):
+        if sub.detect(target):
             print("kill!")
-            target.kill()
+            target.kill() 
 
+    #update sprites
+    for thing in all:
+        thing.updateData(subs, freighters)
+        thing.update()
+
+ 
     #draw the scene
     scene = all.draw(screen)
     pygame.display.update(scene)
